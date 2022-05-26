@@ -1,59 +1,44 @@
-/**
- * @param {number} capacity
- */
-var LRUCache = function (capacity) {
-  this.cacheList = new Map();
-  this.size = capacity;
-};
+// publisher
+// Subscriber
+// unsubscribe
+// Some place to store callbacks that are registered from subscribers.
 
-/**
- * @param {number} key
- * @return {number}
- */
-LRUCache.prototype.get = function (key) {
-  let value = -1;
-  if (this.cacheList.has(key)) {
-    value = this.cacheList.get(key);
-    this.cacheList.delete(key);
-    this.cacheList.set(key, value);
-  }
+function pubSub() {
+  // object which will track of all events and subscription
+  const subscribers = {};
 
-  console.log(this.cacheList);
-  return value;
-};
-
-/**
- * @param {number} key
- * @param {number} value
- * @return {void}
- */
-LRUCache.prototype.put = function (key, value) {
-  //key does not exist in the list
-
-  if (this.get(key) !== -1 && this.cacheList.size < this.size) {
-    this.cacheList.set(key, value);
-  } else if (this.get(key) === -1 && this.cacheList.size >= this.size) {
-    for (let item of this.cacheList) {
-      console.log('item---', item[0]);
-      this.cacheList.delete(item[0]);
-      break;
+  // Publisher:
+  function publish(eventName, data) {
+    // return if event is not subscribed
+    if (!Array.isArray(subscribers[eventName])) {
+      return;
     }
-    this.cacheList.set(key, value);
-  } else {
-    this.cacheList.set(key, value);
+
+    // Whenever you publish any event, it will trigger callback for all stored event in subscriber object
+    subscribers[eventName].forEach((callback) => {
+      callback(data);
+    });
   }
 
-  console.log(this.cacheList);
-};
+  // Subscriber
+  function subscribe(eventName, callback) {
+    if (!Array.isArray(subscribers[eventName])) {
+      subscribers[eventName] = [];
+    }
+    //on subscribe we will we will push callback to subscribers[eventName] array
+    subscribers[eventName].push(callback);
+    const index = subscribers[eventName].length - 1;
 
-/**
- * Your LRUCache object will be instantiated and called as such:
- * var obj = new LRUCache(capacity)
- * var param_1 = obj.get(key)
- * obj.put(key,value)
- */
+    // subscribed callbacks to be removed when they are no longer necessary.
+    return {
+      unsubscribe() {
+        subscribers[eventName].splice(index, 1);
+      },
+    };
+  }
 
-let cache = new LRUCache(2);
-cache.put(1, 'sid');
-cache.put(2, 'kama');
-cache.put(3, 'komal');
+  return {
+    publish,
+    subscribe,
+  };
+}
