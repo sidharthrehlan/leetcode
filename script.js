@@ -1,42 +1,67 @@
-function findSurroundingIslands(x, y, grid) {
-  if (x < 0 || y < 0 || x >= grid.length || y >= grid[0].length) {
-    return;
-  }
+var tictactoe = function (moves) {
+  let winArrayA = new Array(8).fill(0);
+  let winArrayB = new Array(8).fill(0);
 
-  if (grid[(x, y)] === '-1' || grid[(x, y)] === '0') {
-    grid[x][y] = '-1';
-    return;
-  } else {
-    if (grid[x][y] === '1') {
-      //find surrounding land
-      grid[x][y] = '-1';
-      findSurroundingIslands(x - 1, y, grid);
-      findSurroundingIslands(x + 1, y, grid);
-      findSurroundingIslands(x, y - 1, grid);
-      findSurroundingIslands(x, y + 1, grid);
+  // [rowwin, columnwin, primary diagonal, secondary diagonal]
+
+  let winArray;
+
+  for (let i = 0; i < moves.length; i++) {
+    let x = moves[i][0];
+    let y = moves[i][1];
+
+    if (i % 2 === 0) {
+      player = 'A';
+      winArray = winArrayA;
+    } else {
+      player = 'B';
+      winArray = winArrayB;
     }
-  }
-}
 
-var numIslands = function (grid) {
-  let islandCount = 0;
-  for (let i = 0; i < grid.length; i++) {
-    for (let j = 0; j < grid[i].length; j++) {
-      if (grid[i][j] === '1') {
-        findSurroundingIslands(i, j, grid); //
-        islandCount = islandCount + 1;
-        grid[i][j] = '-1';
+    // add row values
+    winArray[x] = winArray[x] + 1;
+    if (isWin(winArray[x])) {
+      return player;
+    }
+    //add column values
+    winArray[3 + y] = winArray[3 + y] + 1;
+    if (isWin(winArray[3 + y])) {
+      return player;
+    }
+    //add primary diagonal values
+    if (x === y) {
+      winArray[6] = winArray[6] + 1;
+      if (isWin(winArray[6])) {
+        return player;
+      }
+    }
+    //add secondary diagonal values
+    if (y === 2 - x) {
+      winArray[7] = winArray[7] + 1;
+      if (isWin(winArray[7])) {
+        return player;
       }
     }
   }
-  return islandCount;
+  if (moves.length === 9) {
+    return 'Draw';
+  }
+  if (moves.length < 9) {
+    return 'Pending';
+  }
 };
 
-let inputGrid = [
-  ['1', '1', '0', '0', '0'],
-  ['1', '1', '0', '0', '0'],
-  ['0', '0', '1', '0', '0'],
-  ['0', '0', '0', '1', '1'],
-];
+function isWin(count) {
+  if (count === 3) {
+    return true;
+  }
+}
 
-console.log(numIslands(inputGrid));
+let moves = [
+  [0, 0],
+  [1, 1],
+  [0, 1],
+  [0, 2],
+  [1, 0],
+  [2, 0],
+];
