@@ -1,17 +1,51 @@
-var reverse = (str) => {
-  let length = str1.length;
+var getRepeater = (s, index) => {
+  let repeater = '';
+  while (!isNaN(s[index])) {
+    repeater = s[index] + repeater;
 
-  reverseStr(str1, 0, length - 1);
+    index = index - 1;
+  }
+  return parseInt(repeater) || 0;
 };
 
-function reverseStr(str, l, r) {
-  if (l > r || l === r) {
-    return;
+/**
+ * @param {string} s
+ * @return {string}
+ */
+var decodeString = function (s) {
+  let openBracketPosition = -1;
+  let closeBracketPosition = -1;
+  let repeater = 0;
+  let repeatedStr = '';
+  let newSub = '';
+
+  for (let i = 0; i <= s.length; i++) {
+    if (s[i] === '[') {
+      openBracketPosition = i;
+
+      repeater = getRepeater(s, i - 1);
+    }
+    if (s[i] === ']') {
+      closeBracketPosition = i;
+    }
+
+    if (openBracketPosition !== -1 && closeBracketPosition !== -1) {
+      repeatedStr = s.substring(openBracketPosition + 1, closeBracketPosition);
+      newSub = s.substring(0, openBracketPosition - repeater.toString().length);
+      for (let j = 0; j < repeater; j++) {
+        newSub = newSub + repeatedStr;
+      }
+      newSub = newSub + s.substring(closeBracketPosition + 1);
+      break;
+    }
   }
 
-  let temp = str[l];
-  str[l] = str[r];
-  str[r] = temp;
+  if (openBracketPosition === -1 && closeBracketPosition === -1) {
+    return s;
+  } else {
+    return decodeString(newSub);
+  }
+};
 
-  reverseStr(str, l + 1, r - 1);
-}
+let output = decodeString('"3[a]2[bc]"');
+console.log(output);
