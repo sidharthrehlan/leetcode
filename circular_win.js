@@ -1,30 +1,31 @@
-var findTheWinner = function (n, k) {
-  let arr = [];
+function isEqual(s, l, r, diff) {
+  if (l >= r) return true;
+  if (diff > 1) return false;
+  if (s[l] === s[r]) {
+    l++;
+    r--;
+    return isEqual(s, l, r, diff);
+  } else if (s[l] !== s[r]) {
+    if (diff > 0) return false;
 
-  for (let i = 1; i <= n; i++) {
-    arr.push(i);
+    let diffl = diff + 1;
+    let diffr = diff + 1;
+
+    return isEqual(s, l + 1, r, diffl) || isEqual(s, l, r - 1, diffr);
   }
+}
 
-  const playNext = (arr, currentIndex, k) => {
-    console.log(`index: ${currentIndex} and array:`, arr);
+/**
+ * @param {string} s
+ * @return {boolean}
+ */
+var validPalindrome = function (s) {
+  if (s.length <= 1) return true;
+  let l = 0;
+  let r = s.length - 1;
+  let diff = 0;
 
-    if (arr.length === 1) {
-      return arr[0];
-    }
-
-    if (currentIndex + k < arr.length) {
-      let indexOfEleToRemove = currentIndex + k - 1;
-      arr.splice(indexOfEleToRemove, 1);
-
-      return playNext(arr, indexOfEleToRemove, k);
-    } else {
-      let newIndex = currentIndex + k - arr.length - 1;
-      arr.splice(newIndex, 1);
-      return playNext(arr, newIndex, k);
-    }
-  };
-
-  return playNext(arr, 0, k);
+  return isEqual(s, l, r, diff);
 };
 
-console.log(findTheWinner(6, 5));
+console.log(validPalindrome('ebcbbececabbacecbbcbe'));
