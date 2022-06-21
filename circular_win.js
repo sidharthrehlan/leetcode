@@ -1,31 +1,43 @@
-function isEqual(s, l, r, diff) {
-  if (l >= r) return true;
-  if (diff > 1) return false;
-  if (s[l] === s[r]) {
-    l++;
-    r--;
-    return isEqual(s, l, r, diff);
-  } else if (s[l] !== s[r]) {
-    if (diff > 0) return false;
+const addToDomainObj = (domainObj, domain) => {
+  let countBreak = domain.split(' ');
+  let domainSubset = countBreak[1].split('.');
+  let length = domainSubset.length;
 
-    let diffl = diff + 1;
-    let diffr = diff + 1;
-
-    return isEqual(s, l + 1, r, diffl) || isEqual(s, l, r - 1, diffr);
+  for (let i = 0; i < length; i++) {
+    let subdomain = domainSubset.join('.');
+    domainObj[subdomain] = domainObj[subdomain]
+      ? parseInt(countBreak[0]) + domainObj[subdomain]
+      : parseInt(countBreak[0]);
+    domainSubset.shift();
   }
-}
 
-/**
- * @param {string} s
- * @return {boolean}
- */
-var validPalindrome = function (s) {
-  if (s.length <= 1) return true;
-  let l = 0;
-  let r = s.length - 1;
-  let diff = 0;
-
-  return isEqual(s, l, r, diff);
+  return domainObj;
 };
 
-console.log(validPalindrome('ebcbbececabbacecbbcbe'));
+const convertDomainObjToArr = (domainObj) => {
+  let outputArr = [];
+  for (property in domainObj) {
+    outputArr.push(`${domainObj[property]} ${property}`);
+  }
+
+  return outputArr;
+};
+
+var subdomainVisits = function (cpdomains) {
+  let domainObj = {};
+
+  cpdomains.forEach((element) => {
+    addToDomainObj(domainObj, element);
+  });
+
+  return convertDomainObjToArr(domainObj);
+};
+
+var cpdomains = [
+  '900 google.mail.com',
+  '50 yahoo.com',
+  '1 intel.mail.com',
+  '5 wiki.org',
+];
+
+console.log(subdomainVisits(cpdomains));
